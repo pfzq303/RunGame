@@ -6,7 +6,7 @@ class ActionManager :
 public:
 	ActionManager(void);
 	~ActionManager(void);
-
-	static CCAction* getRoleAction(ROLE_STATE);
+	CREATE_FUNC(ActionManager);
+	CCAction* getRoleAction(ROLE_STATE,ROLE_STATE);
 };
 

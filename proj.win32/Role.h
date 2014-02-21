@@ -1,6 +1,6 @@
 #pragma once
 #include "MHeader.h"
-
+#include "ActionManager.h"
 
 class Role :
 	public CCNode
@@ -30,11 +30,10 @@ public:
 	CC_SYNTHESIZE(float,ySpeed,YSpeed);
 	CC_SYNTHESIZE(float,currentXSpeed,CurrentXSpeed);
 	CC_SYNTHESIZE(float,currentYSpeed,CurrentYSpeed);
-
 private:
 	float gravity;
 	float maxYSpeed;
-
+	ActionManager * actionManager;
 	void roleXGo();
 	void roleXGo(float);
 	void roleYGo();

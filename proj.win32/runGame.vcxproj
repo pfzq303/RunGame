@@ -175,10 +175,14 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\map.tmx" />
+    <None Include="..\Resources\map.tmx">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Resources\coin.png" />
+    <Image Include="..\Resources\roleRun.png" />
+    <Image Include="..\Resources\role_down.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

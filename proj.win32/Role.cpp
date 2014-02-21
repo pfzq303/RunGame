@@ -1,14 +1,17 @@
 #include "Role.h"
 #include "ActionManager.h"
 
-Role::Role(void):currentRoleState(ROLE_FIRST_DOWN),xSpeed(1.5),ySpeed(15),
-	gravity(0.98),maxYSpeed(15)
+Role::Role(void):currentRoleState(ROLE_FIRST_DOWN),xSpeed(1.5),ySpeed(10),
+	gravity(0.5),maxYSpeed(15)
 {
+	actionManager = ActionManager::create();
+	CC_SAFE_RETAIN(actionManager);
 }
 
 
 Role::~Role(void)
 {
+	CC_SAFE_RELEASE(actionManager);
 }
 
 bool Role::init()
@@ -20,7 +23,7 @@ bool Role::init()
 		currentXSpeed = xSpeed;
 		currentYSpeed = 0;
 
-		mRole = CCSprite::create("CloseNormal.png");
+		mRole = CCSprite::create("role.png");
 		CC_BREAK_IF(!mRole);
 		mRole->setAnchorPoint(CCPointZero);
 		this->addChild(mRole);
@@ -90,7 +93,8 @@ void Role::roleYGo(float dy)
 		if(movY >= dy) //向上发生碰撞
 		{
 			mRole->setPositionY(mRole->getPositionY() + dy);
-			setCurrentRoleState(ROLE_FIRST_DOWN);//反弹，速度大小不变，反向
+			if(currentRoleState != ROLE_FIRST_DOWN)
+				setCurrentRoleState(ROLE_FIRST_DOWN);//反弹，速度大小不变，反向
 		} else {
 			roleYGo();
 		}
@@ -99,8 +103,10 @@ void Role::roleYGo(float dy)
 		float movY = -ROLE_DIR[(int)currentRoleState].y * currentYSpeed;
 		if(movY >= dy) //向下发生碰撞
 		{
-			if(dy > 0) mRole->setPositionY(mRole->getPositionY() - dy);
-			setCurrentRoleState(ROLE_RUN);
+			if(dy > 0)
+				mRole->setPositionY(mRole->getPositionY() - dy);
+			if(currentRoleState != ROLE_RUN)
+				setCurrentRoleState(ROLE_RUN);
 		} else {
 			roleYGo();
 		}
@@ -128,7 +134,12 @@ ROLE_STATE Role::getCurrentRoleState()
 }
 
 void Role::setCurrentRoleState(ROLE_STATE role_state){
-	mRole->stopAllActions();
+	
+	CCAction * action = actionManager->getRoleAction(currentRoleState,role_state);
+	if(action){
+		mRole->stopAllActions();
+		mRole->runAction(action);
+	}
 	currentRoleState = role_state;
 	switch(currentRoleState)
 	{
@@ -139,7 +150,7 @@ void Role::setCurrentRoleState(ROLE_STATE role_state){
 		currentYSpeed = ySpeed;
 		break;
 	};
-	//mRole->runAction(ActionManager::getRoleAction(currentRoleState));
+	
 }
 
 float Role::getXRepairDistance(CCRect targetRect)

@@ -9,7 +9,8 @@ TouchLayer::TouchLayer(void)
 
 TouchLayer::~TouchLayer(void)
 {
-	CC_SAFE_RELEASE(myHandle);
+	if(myHandle)
+		CC_SAFE_RELEASE(myHandle);
 }
 
 void TouchLayer::onEnter()
