@@ -22,13 +22,30 @@ bool GameManager::init()
 	do
 	{
 		CC_BREAK_IF( !CCNode::init() );
+		currentScore = 0;
+
 		_tileMap = CCTMXTiledMap::create("map.tmx");
 		this->addChild( _tileMap , 0);
+
+		gameScoreLabel = CCLabelTTF::create("0",  "Arial", 30);
+		gameScoreLabel->setColor(ccORANGE);
+		gameScoreLabel->setVisible(true);
+		this->addChild(gameScoreLabel, 1);
+
+		gameoverLabel = CCLabelTTF::create("0",  "Arial",60);
+		gameoverLabel->setColor(ccRED);
+		gameoverLabel->setString("Game Over!");
+		gameoverLabel->setVisible(false);
+		this->addChild(gameoverLabel, 1);
+
 		initRole();
+
 		initCoins();
+
 		touchLayer = TouchLayer::create();
 		touchLayer->setMyHandle(_role);
 		this->addChild(touchLayer , 3);
+		cameraRun();
 		scheduleUpdate();
 		ret = true;
 	}while(0);
@@ -44,12 +61,14 @@ void GameManager::initCoins()
 		CCDictionary* dic = (CCDictionary*)obj;
 		float x = dic->valueForKey("x")->floatValue();
 		float y = dic->valueForKey("y")->floatValue();
-		CCSprite * sprite = CCSprite::createWithTexture(coinBatchNode->getTexture());
-		sprite->setAnchorPoint(CCPointZero);
-		sprite->setPosition(ccp(x,y));
-		CC_SAFE_RETAIN(sprite);
-		coinVector.push_back(sprite);
-		_tileMap->addChild(sprite);
+		
+		Coin * coin = Coin::createWithTexture(coinBatchNode->getTexture());
+		coin->setAnchorPoint(CCPointZero);
+		coin->setPosition(ccp(x,y));
+		coin->setScore( ((CCString*)dic->objectForKey("score"))->intValue() );
+		CC_SAFE_RETAIN(coin);
+		coinVector.push_back(coin);
+		_tileMap->addChild(coin);
 	}
 }
 
@@ -135,6 +154,7 @@ void GameManager::gameRun()
 	checkCoins();
 	if(!isCrash())
 		_role->roleGo();
+	scoreDisplay();
 }
 
 void GameManager::checkCoins()
@@ -143,6 +163,7 @@ void GameManager::checkCoins()
 	{
 		if(coinVector[i]->boundingBox().intersectsRect(_role->getCurrentRect()))
 		{
+			currentScore += coinVector[i]->getScore();
 			coinVector[i]->removeFromParentAndCleanup(true);
 			coinVector.erase(coinVector.begin() + i);
 			i--;
@@ -164,7 +185,10 @@ void GameManager::cameraRun()
 		_role->setCurrentRoleState(ROLE_DEAD);
 		return;
 	}
-	// coding
+
+	gameScoreLabel->setPosition(ccp( 20 - getPositionX(),s.height - getPositionY() - 20 ));
+	gameoverLabel->setPosition(ccp( s.width / 2 - getPositionX() ,s.height / 2 - getPositionY()));
+
 	//当位置离1/4 屏幕较远时，需要考虑加速
 	float dis = (s.width / 4 - getPositionX() - _role->getCurrentRect().getMaxX()) ;//获取距离屏幕 1/4的长度
 	float dx = dis / 90;//使速度平滑的减到 xspeed
@@ -177,5 +201,13 @@ void GameManager::cameraRun()
 
 void GameManager::gameover()
 {
+	gameoverLabel->setVisible(true);
 	this->pauseSchedulerAndActions();
+}
+
+void GameManager::scoreDisplay()
+{
+	char str[100] = {'0'};  
+	sprintf(str, "%d", currentScore);
+	gameScoreLabel->setString(str);
 }

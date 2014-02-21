@@ -42,6 +42,9 @@
     <ClCompile Include="TouchLayer.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -69,6 +72,9 @@
       <Filter>Classes\Logic</Filter>
     </ClInclude>
     <ClInclude Include="TouchLayer.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
   </ItemGroup>
